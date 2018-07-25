@@ -1,0 +1,1352 @@
+
+classdef Controller
+    %A Network controller that observe
+    % and control network functtion and
+    %events
+    
+    
+    %IP address of the controller
+    properties(SetAccess = private, GetAccess = private)
+        %The IP cannot be set and cannot be queried (get)
+        IP   
+    end
+    
+    properties
+        LOCATION = 'Lab'         %Location of the Controller
+        IDENTITY =  001          %Controller Identity
+        
+    end
+    
+    
+  methods
+      %Constructor that initialises the controller with default settings
+      function obj = Controller(IP, LOCATION, IDENTITY)
+          if nargin>0
+              obj.IP = IP;
+              obj.LOCATION = LOCATION;
+              obj.IDENTITY = IDENTITY;
+          end
+              
+      end
+      
+        %Function that sets controller location
+        function  L = set.LOCATION(L, obj)
+            %checking for data types
+            if ischar(obj)
+                L.LOCATION = obj;
+                display(obj);
+            else
+                error('Location must be character')
+            end
+            
+            
+        end
+        
+        %Function that set identity       
+        function I = set.IDENTITY(I, obj) 
+            if  isnumeric(obj)
+                I.IDENTITY = obj;
+                display(['The identity of the running controller is', obj])
+            else
+                error('Identity must be numeric')
+            end
+        end         
+        
+  end 
+        
+      
+    
+    %(method blocks static, signifies a stub method, methods not in the
+    %class)
+    methods (Static = true)
+       
+        %fucntion that prints the controller IP and the running machine
+        function obj = controllerIP()
+            
+            %java class type, a function that invokes how to get the IP and
+            %local host machine address
+            me = java.net.InetAddress.getLocalHost;
+            
+            %get the hostname
+            hostname = me.getHostName;
+            
+            %get the IP address
+            obj = me.getHostAddress;
+            
+            %display details of controller the char data type is to convert
+            %java class to matlab string for brevity
+            fprintf('\n The IP address of the controller is %s \n', char(obj));
+            fprintf('\n The controller is running on server %s \n ', char(hostname));
+            fprintf('\n And the current date & time of the day is %s',...
+                datestr(now))
+       
+        end
+        
+        
+        %Function to Authenticate application        
+        function   AuthenticateApp(application, token )
+            %application takes in two arguments (app & token)
+            
+            %carrying out app checks,if the args are null, request...
+            % for more input
+            
+            if (nargin == 0) 
+                display('More args required')
+                
+              %{if there is single input check for application/number inp%}
+            elseif(nargin == 1)
+               if isnumeric(application)
+                   display('Numbers not allowed')
+                   error('Authentication failed')
+                   
+                      %{checking for incomplete authentication%
+                      %providing only one argument
+                      
+                elseif strcmp(application,'App1')
+                display('Incomplete Authentication, token required');
+                error('Auth_Failure')
+                
+                elseif strcmp(application,'App2')
+                display('Incomplete Authentication, token required')
+                error('Auth_Failure')
+                
+                
+                %checking for inputs that are not registered application
+                
+               elseif (nargin ==1)
+                if ~strcmp(application,'App1') %|| ~strcmp(application,'App2')
+                    display('Application input is expected')
+                    error('wrong applicaton input')
+                    
+               %checking for the second application     
+                elseif ~strcmp(application,'App2')
+                    display('Application input is expected')
+                    error('wrong application input')
+                    
+                %%If all conditions met then proceed
+                else
+                    display('Proceeding with verification')
+                    
+                end
+                
+               end
+                              
+            end
+           
+         %If input is morethan 1, proceed with authentication process     
+            if (nargin>1)
+                
+                %{check for numerical inputs and deny !!!%}
+                if isnumeric(application) 
+                    display('Character expectd')
+                elseif isnumeric(token)
+                    error('Numerics not allowed for Application authentication')
+                 end
+                    
+             %Application identifier as keyset & name of application
+             
+                 %Random Key genrator algorithm
+%                 A9=['A':'Z' '0':'9';];
+%                 Data=zeros(length(A9),20);
+%                 for k=1:size(Data,2)
+%                     Data(:,k)=randperm(length(A9));
+%                 end
+%                 Data=A9(Data)
+                Key = {'App1', 'App2'};
+                val = {'LAYER_2_MAC_LEARNING_APPLICATION','IP_BLACKLIST_APPLICATION'};
+                C = containers.Map(Key,val);
+
+                K = C.values;   %values of (C)
+                M = K(1);       %first index value of C
+                N = K(2);       %second index value of C
+
+                 %Assign value for the token, the keys are thesame
+                val_2 = {'ZPD5H580XJWLZ1RKDOE7',...
+                    'HNHAKGA2ZMRDQCOH9JRV'};
+                
+                A = containers.Map(Key, val_2);
+                J = A.values;   %values of (C)
+                L = J(1);
+                S = J(2);
+                
+            %comparing credentials of application
+                    if strcmp(application,'App1') &&  strcmp(token, L );
+                        
+                        
+               % display instruction after successful check
+                        fprintf('\n This is %s \n\n', char(M))
+                        pause(3)
+                        display(sprintf('Verifying application ....\n'))
+                        pause(3)
+                        display(sprintf('Application Authentication Successful'))
+                        message = 'AUTHENTICATION SUCCESSFUL';
+                        title = 'Controller Authentication';
+                        msgbox(message, title, 'help')
+                
+               %if the provided token does not match the given token,
+               %deny!!
+                    elseif strcmp(application, 'App1') && ~strcmp(token...
+                               , L) 
+                           %error instructions to display
+                        sprintf('Wrong token for %s', char(Key(1)))
+                        message2 = 'Access Denied';
+                        title2 = 'Controller_info:';
+                        msgbox(message2, title2, 'error')
+                        error('Authentication fail, access denied')
+                        
+                    
+                
+               %comare the credentials of App2 with the toekn        
+                    elseif  strcmp(application, 'App2') && strcmp(token, S )
+                        
+                        %print intructions after verification
+                        fprintf('This is %s \n', char(N))
+                        pause(3)
+                        display(sprintf('\n Verifying application .... \n'))
+                        pause(3)
+                        display([' Application Authentication Successful for '...
+                            ,char(Key(2))])
+                        message = 'AUTHENTICATION SUCCESSFUL';
+                        title = 'Controller Authentication';
+                        msgbox(message, title, 'help')
+                      
+               %if the provided token does not match the given token,
+               %deny!!     
+                    elseif strcmp(application, 'App2') && ~strcmp(token...
+                               , S) 
+                           %char fucntion casted on a c ell array
+                        sprintf('Wrong token for %s', char(Key(2)))
+                        message3 = 'Access Denied';
+                        title3 = 'Controller_info:';
+                        msgbox(message3, title3, 'error')
+                        error('Authentication fail, access denied')
+                        
+                        %if nothin matches then executes ths commmand
+                    else
+                        error('Controller_info: Invalid application ')       
+                    end              
+                 
+             end
+                    
+        end
+            
+        
+            %function that output MAC address
+       
+            function decimal2hex()
+                
+%                 if isempty(argument)
+%                     display('Argument required')
+%                 end
+%                 
+%                 if ~isnumeric(argument)
+%                     display('Numeric input expected')
+%                     error('Decimals only')
+%                 end
+%                 
+                %Random numbers for generating MAC address
+                rand1 = 99876543679256;
+                rand2 = 19876543679899;
+                rand3 = 79876588679899;
+                rand4 = 79876593679899;
+                rand5 = 33876543679876;
+                rand6 = 41876543679666;
+                rand7 = 87654274947493;
+                rand8 = 99876543987888;
+                
+                %list of rand numbers
+                r = [rand1, rand2, rand3, rand4, rand5, rand6, rand7, rand8];
+                
+                %delimiter
+                last_index = 8;
+                
+                %initialisng a for loop that 
+                for i = 1: last_index
+                    
+                    %Generating MAC ADDRESSES
+                    MAC_ADDRESS = dec2hex(r(i));
+                    display(['This is the new MAC address   ', char(MAC_ADDRESS)])
+                end
+        
+                
+            end
+                
+                    
+  %Layer 2 MAC LEARNING APPLICATION takes two input for start (src mac & 
+  %dst mac)
+        function l2switch(src_macaddress, dst_macaddress)
+            
+            %MAC address and designated port numbers in FlowTable
+            hw_address = {'00-00-00-00-00-01','0B-A1-CE-00-00-01',...
+                'CB-14-22-01-23-45'};
+            %Respective Designated Port numbers
+            port_number = {1, 2, 3};
+            %FlowTable Mapping
+            mac_table = containers.Map(hw_address, port_number);
+           key_index = keys(mac_table);
+           value_index = values(mac_table);
+           
+           
+           %Function that retrieves the state of the FlowTable
+            function display_flowtable()
+                MAC_Address = mac_table.keys;
+                Ports = mac_table.values;
+                
+                display('      MAC_Address         Ports'  );
+                
+                display([MAC_Address', Ports'])
+            end
+            
+            %test1: when both Source and Destination MACs are known
+            %check for source MAC address & destination MAC add if in table
+            
+            if isKey(mac_table, src_macaddress) && strcmp(src_macaddress, key_index(1))...
+                   && isKey(mac_table, dst_macaddress) && strcmp(dst_macaddress, key_index(2))
+               
+               %resulting action if the coditions above are met
+                fprintf('Table lookup for Source MAC address %s \n \n', src_macaddress)
+                pause(2);
+                
+                %The parenthesis on value_index{n} is to covert the
+                %datatype so that it can be displayed on the output
+                fprintf('Source MAC address %s is contained in the Flowtable at port  %d \n \n'...
+                    , src_macaddress, value_index{1});
+                pause(2)
+                display('      MAC_Address         Port'  );
+                %binding
+                MAC_ADD_1 = key_index(1);
+                Port_num_1 = value_index(1);
+                display([MAC_ADD_1, Port_num_1])
+                
+                %Table lookup for MAC
+                fprintf('Table lookup for Destintion MAC address %s \n \n', dst_macaddress)
+                pause(2);
+                
+                fprintf('Destination MAC address %s is contained in the Flowtable at port  %d \n \n'...
+                    , dst_macaddress, value_index{2});
+                pause(2)
+                display('      MAC_Address         Port'  );
+                MAC_ADD_2 = key_index(2);
+                Port_num_2 = value_index(2);
+                display([MAC_ADD_2, Port_num_2])
+                
+                %dispaly the full FlowTable
+                display_flowtable()
+                
+                
+                %check for the second MAC address
+            elseif isKey(mac_table, src_macaddress) && strcmp(src_macaddress, key_index(1))...
+                   && isKey(mac_table, dst_macaddress) && strcmp(dst_macaddress, key_index(3))
+               
+               %if the above condition is tru , then execute the next
+               %statement
+                fprintf('Table lookup for Source MAC address %s \n \n', src_macaddress)
+                pause(2);
+                
+                %Making Sure Source MAC is contained int h flow table
+                fprintf('Source MAC address %s is contained in the Flowtable at port  %d \n \n'...
+                    , src_macaddress, value_index{1});
+                pause(2)
+                display('      MAC_Address         Port'  );
+                %binding
+                MAC_ADD_1 = key_index(1);
+                Port_num_1 = value_index(1);
+                display([MAC_ADD_1, Port_num_1])
+                
+                %show the process of dst_mac lookup
+                fprintf('Table lookup for Destintion MAC address %s \n \n', dst_macaddress)
+                pause(2);
+                
+                %Outputing the result of dst_mac address
+                fprintf('Destination MAC address %s is contained in the Flowtable at port  %d \n \n'...
+                    , dst_macaddress, value_index{3});
+                pause(2)
+                display('      MAC_Address         Port'  );
+                %binding for 3rd mac addresses
+                MAC_ADD_III = key_index(3);
+                Port_num_III = value_index(3);
+                display([MAC_ADD_III, Port_num_III])
+                
+                %checking for the 3rd MAC ADDRESS
+            elseif isKey(mac_table, src_macaddress) && strcmp(src_macaddress, key_index(3))...
+                   && isKey(mac_table, dst_macaddress) && strcmp(dst_macaddress, key_index(1))
+               
+               %executing the statement
+                fprintf('Table lookup for Source MAC address %s \n \n', src_macaddress)
+                pause(2);
+                
+                %output of results indicating ssuccessful execution
+                fprintf('Source MAC address %s is contained in the Flowtable at port  %d \n \n'...
+                    , src_macaddress, value_index{3});
+                pause(2)
+                %alligning output
+                display('      MAC_Address         Port'  );
+                MAC_ADD_3 = key_index(3);
+                Port_num_3 = value_index(3);
+                display([MAC_ADD_3, Port_num_3])
+                
+                %for the destination MAC address
+                
+                fprintf('Table lookup for Destintion MAC address %s \n \n', dst_macaddress)
+                pause(2);
+                
+                %Output for dst_mac after checkup
+                fprintf('Destination MAC address %s is contained in the Flowtable at port  %d \n \n'...
+                    , dst_macaddress, value_index{1});
+                pause(2)
+                %alligning output
+                display('      MAC_Address         Port'  );
+                MAC_ADD_1 = key_index(1);
+                Port_num_1 = value_index(1);
+                display([MAC_ADD_1, Port_num_1])
+                
+                %Show the flowtable
+                display_flowtable()
+                
+                %Hence if the dest. MAC is not in the Flowtable
+            elseif isKey(mac_table, src_macaddress) &&  strcmp(src_macaddress, key_index(1))...
+                    && ~isKey(mac_table, dst_macaddress)
+                
+                %CHECK to see if the data type is not double
+                if isnumeric(dst_macaddress)
+                    display('Wrong data type, object of type hex expected')
+                    %output error
+                    error('MAC input expected')
+                end
+                
+                %lookup for source MAC address
+                fprintf('Table lookup for Source MAC address %s \n \n', src_macaddress)
+                pause(2);
+                
+                %The parenthesis on value_index{n} is to covert the
+                %datatype so that it can be displayed on the output
+                fprintf('Source MAC address %s is contained in the Flowtable at port  %d \n \n'...
+                    , src_macaddress, value_index{1});
+                pause(2)
+                
+                %allign
+                display('      MAC_Address         Port'  );
+                MAC_ADD_1 = key_index(1);
+                Port_num_1 = value_index(1);
+                display([MAC_ADD_1, Port_num_1])
+
+                %lookup for destination Mac address
+                fprintf('Destination MAC address %s not contained in Flowtable \n \n', dst_macaddress)
+                pause(2);
+                
+                %curly braces for cell, else fprintf won't work
+                fprintf('Flooding Destination MAC address %s to all connected ports %d, %d, %d \n \n'...
+                    , dst_macaddress, value_index{1}, value_index{2},...
+                    value_index{3});
+                pause(2);
+                
+                %number_port = 4;
+                %fprintf('Response from Destination Host at port %d \n \n', number_port)
+                pause(2)
+                fprintf('Adding %s the new MAC addrees in the Flowtable \n \n'...
+                    ,dst_macaddress)
+                
+                %add the MAC address to the FlowTable
+                mac_table(dst_macaddress) = 4;
+                values(mac_table);
+                index = 4;
+                pause(2)
+                %learned MAC address
+                fprintf('The newly learned MAC address %s is added to the Flowtable at port  %d \n \n'...
+                    , dst_macaddress, index);
+                pause(2)
+                %present output of the  FLowTable
+                fprintf('This is the new Flowtable \n \n')
+                pause(2)
+                %mapping of keys and values
+                MAC_Address = mac_table.keys;
+                Ports = mac_table.values;
+                display('      MAC_Address         Ports'  );
+                
+                %show binding between ports and MAC
+                display([MAC_Address', Ports'])
+                
+                
+                %else if there are no matching mac ADDRESSES
+                
+                elseif ~isKey(mac_table, src_macaddress)&& ~isKey(mac_table, dst_macaddress)
+                fprintf('Table lookup for Source MAC address %s \n \n', src_macaddress)
+                pause(2);
+                %Flowtable results
+                fprintf('Source MAC address %s is NOT contained in the Flowtable\n \n'...
+                    , src_macaddress);
+                pause(2)   
+                %Adding flows in FlowTable
+                fprintf('Adding Source MAC address %s to the FlowTable \n \n', src_macaddress)
+                mac_table(src_macaddress) = 4;
+                pause(2)
+                
+                %Show flowtables
+                display_flowtable();
+                
+                %for the destination MAC address
+                
+                fprintf('Table lookup for Destintion MAC address %s \n \n', dst_macaddress)
+                pause(2);
+                
+                %Output indicating AC addrss not in the flowtable
+                fprintf('Destination MAC address %s is not  contained in the Flowtable \n \n'...
+                    , dst_macaddress);
+                pause(2)
+                
+                %completing te algorith of MAC learning #flooding
+                fprintf('Flooding Destination MAC address %s to all connected ports %d, %d, %d, %d \n \n'...
+                    , dst_macaddress, value_index{1}, value_index{2}, value_index{3}, 4);
+                %Adding flows in the table
+                fprintf('Adding Destination MAC address %s to the FlowTable', dst_macaddress)
+                pause(2)
+                
+                %assignment
+                mac_table(dst_macaddress) = 5;
+                pause(2)
+                display(mac_table)
+                %display MAC table
+                display_flowtable()
+                
+                %LOOP AVOIDANCE
+            elseif (src_macaddress == dst_macaddress)
+                error('Switch: Loop Avoidance, dropping Frames')
+            
+                
+            end
+        end
+        
+        %function that generates random IP addresses
+        function GenerateRandomIP()
+            
+            %initiating variables that will generate 4 octets IP address.
+            m = 1:90;
+            y = 100:160;
+            a = 170:200;
+            b = 201:255;
+            fprintf('\n')
+            display('Randomly generated IP Addresses') 
+            
+            t = 8;
+            z = 1;
+            %initialising random decimals
+            r = (t-z).*rand(8,11);
+            n = floor(r(1));
+            d = m(n);
+            e =  y(n);
+            f = a(n);
+            g = b(n);
+            k='.';
+            IP  = [num2str(d),k,num2str(e),k,num2str(f),k,num2str(g)];
+            fprintf('\n\n')
+            disp(IP)
+            %display(e + '.' + f)
+            
+        end
+        
+       %Application that suppresses unwanted traffic from the
+        function blacklist(src_IP, dst_IP)
+            
+            %Matching IP addresses for the coreesponding blacklist website
+            blacklist_IP = {'200.1.1.1', '98.4.0.3', '123.5.6.7'};
+            %Blacklisted websites 
+            web_addresses = {'www.blackops.com','www.intruders.com', 'www.totalhack.com'};
+            %data structure that helps map the IP to the respective
+            %websites (DNS Mapping)
+            
+            blacklist_database = containers.Map( blacklist_IP, web_addresses);
+            
+            %Preconfigured flows in the flow table
+            pause(2)
+            sprintf('Installed blacklist flows in FlowTable \n')
+            %IP and website values from the database
+            Target_IPAddresses = keys(blacklist_database);
+            DNS_IPmap = values(blacklist_database);
+            
+            %fucntion that displays the malicious database
+            function display_blacklist_database()
+            disp('Target_IPAddresses    DNS_IPmap '  );
+            display([Target_IPAddresses',  DNS_IPmap'])
+            end
+             
+            %Listen for incoming request from IP input
+            if ~isKey(blacklist_database,src_IP) && isKey(blacklist_database, dst_IP)...
+                    && strcmp(dst_IP, blacklist_IP(1))
+                
+                %display blaklist database
+                display_blacklist_database()
+                pause(2)
+                %checking the database
+                sprintf('Consulting malicous database...\n')
+                pause(2)
+                %execution
+                sprintf('The destination IP address %s is contained in the malicous database',...
+                    dst_IP)
+                
+                pause(2)
+                %execution
+                sprintf('Destination IP %s is the %s domain, which access is prohibited',...
+                    dst_IP, web_addresses{1})
+                msg = 'Destination in black list accesss denied';
+                msgbox(msg,'error')
+                
+                %checking for incoming packets
+            elseif ~isKey(blacklist_database,src_IP) && isKey(blacklist_database, dst_IP)...
+                    && strcmp(dst_IP, blacklist_IP(2))
+                
+                %displaying the database
+                display_blacklist_database()
+                pause(2)
+                %check
+                sprintf('Consulting malicous database...\n')
+                pause(2)
+                sprintf('The destination IP address is contained in the malicous database')
+                pause(2)
+                %utrusted domain
+                sprintf('Destination IP %s is the %s domain, which access is prohibited',...
+                    dst_IP, web_addresses{2})
+                %denied access
+                msg = 'Destination in blacklist accesss denied';
+                msgbox(msg, 'error')
+                
+                
+                %checking for incoming packets
+            elseif ~isKey(blacklist_database,src_IP) && isKey(blacklist_database, dst_IP)...
+                    && strcmp(dst_IP, blacklist_IP(3))
+                
+                %showing the database content
+                display_blacklist_database()
+                pause(2)
+                %querying database
+                sprintf('Consulting malicous database...\n')
+                pause(2)
+                sprintf('The destination IP address is contained in the malicous database')
+                pause(2)
+                sprintf('Destination IP %s is the %s domain, which access is prohibited',...
+                    dst_IP, web_addresses{3})
+                msg = 'Destination in black list accesss denied';
+                msgbox(msg, 'error')
+                
+            %For the safeside
+            elseif ~isKey(blacklist_database,src_IP) && ~isKey(blacklist_database, dst_IP)
+                   
+                %show the content of FlowTable
+                display_blacklist_database()
+                pause(2)
+                %querying database
+                sprintf('Consulting malicous database...\n')
+                pause(2)
+                %after successful quesry the resulting output
+                sprintf('The destination IP %s address is not contained in the malicous database'...
+                    ,dst_IP)
+                pause(2)
+                %Permitted query
+                sprintf('Destination IP %s is permitted', dst_IP)
+                %website access
+                url = ' https://www.google.com';
+                %website access
+                web(url, '-browser')
+                
+                msg = 'Access Granted';
+                msgbox(msg, 'help')
+            
+                
+            end
+            
+        end
+        
+        %AUTHORISATION FUNCTION
+        function b = authorize(app,func)
+            
+            
+            keyset1 = {'func1','func2','func3','func4','func5','func6','func7','func8','func9','func10','func11'....
+                ,'func12','func13'};
+            keyset2 = {'func_1','func_2','func_3'};
+            
+            Attributes = {keyset1, keyset2};
+            
+            Authorised_Apps = {'App1', 'App2'};
+            s = containers.Map(Authorised_Apps,Attributes)
+            
+            b=strcat('authorization in progress',app);
+            display(b)
+            
+            
+            
+            q=0;
+            if strcmp(app,'App1')
+                
+                for i = 1: length(keyset1)
+                    
+                    if strcmp(func,keyset1(i))
+                        b=true;
+                        q=1;
+                        break;
+                    end
+                end
+%                 if q==0
+%                     b=false;
+%                 end
+            end
+            
+            if strcmp(app,'App2')
+                for i = 1: length(keyset2)
+                    if strcmp(func,keyset2(i))
+                        b=true;
+                        q=1;
+                        break;
+                    end
+                end
+                if q==0
+                    b=false;
+                end
+            end
+
+         end
+         %End of authorisation 
+         
+         function receiveRequest(application , token , func)
+               % for more input
+            
+            if (nargin == 0) 
+                display('More args required')
+                
+              %{if there is single input check for application/number inp%}
+            elseif(nargin == 1)
+               if isnumeric(application)
+                   display('Numbers not allowed')
+                   error('Authentication failed')
+                   
+                      %{checking for incomplete authentication%
+                      %providing only one argument
+                      
+                elseif strcmp(application,'App1')
+                display('Incomplete Authentication, token required')
+                error('Auth_Failure')
+                
+                elseif strcmp(application,'App2')
+                display('Incomplete Authentication, token required')
+                error('Auth_Failure')
+                
+                
+                %checking for inputs that are not registered application
+                
+               elseif (nargin ==1)
+                if ~strcmp(application,'App1') %|| ~strcmp(application,'App2')
+                    display('Application input is expected')
+                    error('wrong string input')
+                    
+                elseif ~strcmp(application,'App2')
+                    display('Application input is expected')
+                    error('wrong string input')
+                    
+                
+                else
+                    display('Proceeding with verification')
+                    
+                end
+               end
+                              
+            end
+           
+         %If input is morethan 1, proceed with authentication process     
+            if (nargin>1)
+                
+                %{check for numerical inputs and deny !!!%}
+                if isnumeric(application) 
+                    display('Character expectd')
+                elseif isnumeric(token)
+                    error('Numerics not allowed for Application authentication')
+                 end
+                    
+             %Application identifier as keyset & name of application
+             
+                 %Random Key genrator algorithm
+                % A9=['A':'Z' '0':'9';];
+                % Data=zeros(length(A9),20);
+                % for k=1:size(Data,2)
+                %     Data(:,k)=randperm(length(A9));
+                % end
+                % Data=A9(Data)
+                Key = {'App1', 'App2'};
+                val = {'LAYER_2_MAC_LEARNING_APPLICATION','BLACK_LIST_APPLICATION'};
+                C = containers.Map(Key,val);
+
+                K = C.values;   %values of (C)
+                M = K(1);       %first index value of C
+                N = K(2);       %second index value of C
+
+                 %Assign value for the token, the keys are thesame
+                val_2 = {'ZPD5H580XJWLZ1RKDOE7',...
+                    'HNHAKGA2ZMRDQCOH9JRV'};
+                
+                A = containers.Map(Key, val_2);
+                J = A.values;   %values of (C)
+                L = J(1);
+                S = J(2);
+                
+            %comparing credentials of application
+                    
+                    if strcmp(application,'App1') &&  strcmp(token, L );                    
+               % display instruction after succesful check
+                        fprintf('\n This is %s \n\n', char(M))
+                        pause(3)
+                        display(sprintf('Verifying application ....\n'))
+                        pause(3)
+                        
+                        
+                        display(sprintf('Application Authentication Successful \n'))
+                        message = 'AUTHENTICATION SUCCESSFUL';
+                        title = 'Controller Authentication';
+                        msgbox(message, title, 'help')
+             
+                Permissions =menu('PERMISSIONS FOR APPLICATION', 'READ_SRC_MAC', 'READ_DST_MAC'...
+                         ,'UNICAST_FWD','WRITE_SRC_MAC','WRITE_DST_MAC','BRDC_FWD','MULTICAST_FWD','WRITE_MEM')
+                     
+%                         if Permissions == 1
+%                             msgbox('isPermitted', 'help')
+%                         end
+
+                        %Checking for the right attribute if yes exec.
+                         if strcmp(func, 'func1')
+                             %verboe stateent confirming attribute
+                             %fprintf(' %s READ_SRC_MAC is an authorised permission for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s READ_SRC_MAC is an authorised permission for %s\n\n',func,application);
+                             func = fopen('switchrequest.txt', 'r');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %reading src_mac
+                             SRC_MAC = fgetl(func);
+                             title2 = 'Receive_Request';
+                             msg = 'READ_SRC_MAC';
+                             %initialising gui result 
+                             msgbox(msg, title2, 'help')
+                             %display MAC
+                             disp(SRC_MAC)
+                             fclose(func);
+                             
+                             
+                         elseif strcmp(func, 'func2')
+                              %verbose statement confirming attribute
+                             %fprintf(' %s READ_DST_MAC is an authorised function for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s READ_DST_MAC is an authorised permission for %s\n\n',func,application);
+                             func = fopen('switchrequest.txt', 'r');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %reading src_mac
+                             DST_MAC = fgetl(func);
+                             title2 = 'Receive_Request';
+                             msg = 'READ_DST_MAC';
+                             %initialising gui result 
+                             msgbox(msg, title2, 'help')
+                             %display MAC
+                             disp(DST_MAC)
+                             fclose(func);   
+                             
+                         elseif strcmp(func, 'func3')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s WRITE_SRC_MAC is an authorised function for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s WRITE_SRC_MAC is an authorised permission for %s\n\n',func,application);
+                             func = fopen('switchrequest2.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %writing src_mac
+                             write_src_mac = '48A5B7FDFE1B'
+                             fprintf(func, write_src_mac);
+                             title2 = 'Receive_Request';
+                             msg = 'WRT_SRC_MAC';
+                             %initialising gui result
+                             msgbox(msg, title2, 'help')
+                             %display MAC
+                             %disp(SRC_MAC)
+                             fclose(func);
+                             
+                         elseif strcmp(func, 'func4')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s WRITE_DST_MAC is an authorised function for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s WRITE_DST_MAC is an authorised permission for %s\n\n',func,application);
+                             func = fopen('switchrequest2.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %reading src_mac
+                             write_dst_mac = '48A5B7FDFE1B'
+                             fprintf(func, write_dst_mac);
+                             title2 = 'Receive_Request';
+                             msg = 'WRT_DST_MAC';
+                             %initialising gui result
+                             msgbox(msg, title2, 'help')
+                             %display MAC
+                             %disp(SRC_MAC)
+                             fclose(func);
+
+                                 
+                                 %UNICAST FORWARDING
+                         elseif strcmp(func, 'func5')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s UNICAST_FWD is an authorised function for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s UNICAST_FWD is an authorised permission for %s\n\n',func,application);
+                             func = fopen('switchrequest2.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %reading src_mac
+
+                             c = Controller;
+                             c.l2switch('00-00-00-00-00-01','0B-A1-CE-00-00-01')
+                             title2 = 'Receive_Request';
+                             msg = 'UNICAST_FWD';
+                             %initialising gui result
+                             msgbox(msg, title2, 'help')
+                             %display MAC
+                             %disp(SRC_MAC)
+                             fclose(func);
+
+                         elseif strcmp(func, 'func6')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s BRDC_FWD is an authorised function for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s BRDC_FWD is an authorised permission for %s\n\n',func,application);
+                             func = fopen('switchrequest2.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %reading src_mac
+
+                             c = Controller;
+                             c.l2switch('0E-1B-32-00-7C-01','0B-AB-CE-32-B1-01')
+                             title2 = 'Receive_Request';
+                             msg = 'BRDC_FWD';
+                             %initialising gui result
+                             msgbox(msg, title2, 'help')
+                             %display MAC
+                             %disp(SRC_MAC)
+                             fclose(func);
+
+                             %memory
+                             %systeminfo |find "Available Physical Memory"
+                             %dos('systeminfo | findstr "System Memory"')
+                            
+                             %Composed threat for Sytem_Call includng
+                             %Physical\Virtual Memory, Boot time,
+                             %Directory calls
+                             
+                         elseif strcmp(func, 'func7')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s  is NOT an authorised function for %s\n\n',func,application);
+                             cprintf('*red' ,'%s is NOT an authorised permission for %s\n\n',func,application);
+                             func = fopen('anormally_request.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %reading src_mac
+
+                             %[results1,system_call] = memory
+                             [results2, system_info] = dos('systeminfo | findstr "System Memory"')
+
+                             %saving the output for analysis
+                             fwrite(func,system_info)
+
+                             title2 = 'Receive_Request';
+                             msg = 'Invalid_Request';
+                             %initialising gui result
+                             msgbox(msg, title2, 'error')
+                             %display MAC
+                             %disp(SRC_MAC)
+
+                             error('Controller_Info:Invalid Request')
+                             fclose(func);
+                            
+                             %Composed Threat that makes TCP/IP calls on 
+                            % the establsihed socket conection%
+                         elseif strcmp(func, 'func8')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s  is NOT an authorised function for %s\n\n',func,application);
+                             cprintf('*red' ,'%s is NOT an authorised permission for %s\n\n',func,application);
+                             func = fopen('anormally_request.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             
+    
+                             %Initiating Threat for TCP port connection
+                             %execute tcp connection and reveal results
+                             title2 = 'Receive_Request';
+                             msg = 'Invalid_Request';
+                             %initialising gui result
+                             msgbox(msg, title2, 'error')
+                             Attack = dos('netstat')
+                             error('Controller_Info:Invalid Request')
+                             fclose(func);    
+     
+                          else
+                              fprintf('Invalid Request for %s',  func)
+                              errordlg('unrecognised function')
+
+                         end
+                
+               %if the provided token does not match the given token,
+               %deny!!
+                    elseif strcmp(application, 'App1') && ~strcmp(token...
+                               , L) 
+                           %error instructions to display
+                        sprintf('Wrong token for %s', char(Key(1)))
+                        message2 = 'Access Denied';
+                        title2 = 'Controller_info:';
+                        msgbox(message2, title2, 'error')
+                        error('Authentication fail, access denied')
+                        
+                    
+                
+               %comare the credentials of App2 with the toekn        
+                    elseif  strcmp(application, 'App2') && strcmp(token, S )
+                            
+                        %print intructions after verification
+                        fprintf('This is %s \n', char(N))
+                        pause(3)
+                        display(sprintf('\n Verifying application .... \n'))
+                        pause(3)
+                        display([' Application Authentication Successful for  '...
+                            ,char(Key(2))])
+                        fprintf('\n')
+                        message = 'AUTHENTICATION SUCCESSFUL';
+                        title = 'Controller Authentication';
+                        msgbox(message, title, 'help')
+              
+                        %THREAT dos('nslookup yahoo.com')
+                        if strcmp(func, 'func_1')
+                            
+                              
+                            %verboe stateent confirming attribute
+                             %fprintf(' %s READ_DST_IP is an authorised permission for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s READ_DST_IP is an authorised permission for %s\n\n',func,application);
+                             func = fopen('blaklist.txt', 'r');
+                             %To check if there is actually an IP address
+                             %request
+                             if func < 0
+                                 error('error processing destination IP request %s \n n', func)
+                             end
+                             %reading dst_mac
+                             DST_IP = fgetl(func);
+                             title2 = 'Receive_Request';
+                             msg = 'READ_DST_IP';
+                             %initialising gui result 
+                             msgbox(msg, title2, 'help')
+                             %display MAC
+                             disp(DST_IP)
+                             
+                             Permissions =menu('PERMISSIONS FOR APPLICATION', 'READ_SRC_IP', 'READ_DST_IP'...
+                            ,'COMP_IP','DRP_IP','FWD_DST_IP','SET_FLOWS');
+                               fclose(func);
+                                       
+                            
+                            
+   
+                        elseif strcmp(func, 'func_2')
+                            %verboe stateent confirming attribute
+                             %fprintf(' %s READ_SRC_IP is an authorised permission for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s READ_SRC_IP is an authorised permission for %s\n\n',func,application);
+                             func = fopen('whitelist.txt', 'r');
+                             %To check if there is actually an IP address
+                             %request
+                             if func < 0
+                                 error('error processing destination IP request %s \n n', func)
+                             end
+                             %reading src_ip
+                             SRC_IP = fgetl(func);
+                             title2 = 'Receive_Request';
+                             msg = 'READ_SRC_IP';
+                             %initialising gui result 
+                             disp(SRC_IP)
+                             msgbox(msg, title2, 'help')
+                             fclose(func);
+                             Permissions =menu('PERMISSIONS FOR APPLICATION', 'READ_SRC_IP', 'READ_DST_IP'...
+                            ,'COMP_IP','DRP_IP','FWD_DST_IP','SET_FLOWS');
+                             
+                         elseif strcmp(func, 'func_3')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s COMP_IP is an authorised function for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s COMP_IP is an authorised permission for %s\n\n',func,application);
+                             func = fopen('blacklist.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %reading flow table
+                             blacklist_IP = {'200.1.1.1', '98.4.0.3', '123.5.6.7'};
+                             %Blacklisted websites 
+                             web_addresses = {'www.blackops.com','www.intruders.com', 'www.totalhack.com'};
+                             %data structure that helps map the IP to the respective
+                             %websites (DNS Mapping)
+
+                             blacklist_database = containers.Map( blacklist_IP, web_addresses);
+                             
+                             fprintf('Comparing DST_IP against malicious database')
+                             
+                             [keys(blacklist_database)']
+                             
+                             [values(blacklist_database)']
+                             
+                             %saving the output for analysis
+                             
+
+                             title2 = 'Receive_Request';
+                             msg = 'COMP_IP';
+                             %initialising gui result
+                             msgbox(msg, title2, 'help')
+                             
+                         elseif strcmp(func, 'func_4')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s DRP_IP is an authorised function for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s DRP_IP is an authorised permission for %s\n\n',func,application);
+                             func = fopen('blaklist.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %reading flow table
+                             blacklist_IP = {'200.1.1.1', '98.4.0.3', '123.5.6.7'};
+                             %Blacklisted websites 
+                             web_addresses = {'www.blackops.com','www.intruders.com', 'www.totalhack.com'};
+                             %data structure that helps map the IP to the respective
+                             %websites (DNS Mapping)
+
+                             blacklist_database = containers.Map( blacklist_IP, web_addresses);
+                             
+                             src_IP = '192.168.1.1';
+                             dst_IP = '123.5.6.7';
+                             if ~isKey(blacklist_database,src_IP) && isKey(blacklist_database, dst_IP)
+                                   
+
+                                %display blaklist database
+                                %display_blacklist_database()
+                                pause(2)
+                                sprintf('Consulting malicous database...\n')
+                                pause(2)
+                                %execution
+                                sprintf('The destination IP address %s is contained in the malicous database',...
+                                    dst_IP)
+
+                                pause(2)
+                                %execution
+                                sprintf('Destination IP %s is the %s domain, which access is prohibited',...
+                                    dst_IP, web_addresses{1})
+                                msg = 'Destination in black list accesss denied';
+                                msgbox(msg,'help')
+                             end
+                             
+                             %saving the output for analysis
+                             
+
+                             title2 = 'Receive_Request';
+                             msg = 'DRP_IP';
+                             %initialising gui result
+                             msgbox(msg, title2, 'help')
+                             
+                             
+                          elseif strcmp(func, 'func_5')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s FWD__DST_IP is an authorised function for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s FWD_DST_IP is an authorised permission for %s\n\n',func,application);
+                             func = fopen('blaklist.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %reading flow table
+                             blacklist_IP = {'200.1.1.1', '98.4.0.3', '123.5.6.7'};
+                             %Blacklisted websites 
+                             web_addresses = {'www.blackops.com','www.intruders.com', 'www.totalhack.com'};
+                             %data structure that helps map the IP to the respective
+                             %websites (DNS Mapping)
+
+                             blacklist_database = containers.Map( blacklist_IP, web_addresses);
+                             
+                             src_IP = '192.168.1.1';
+                             dst_IP = '212.58.244.69';
+                             if ~isKey(blacklist_database,src_IP) && ~isKey(blacklist_database, dst_IP)
+                   
+                
+                                %display_blacklist_database()
+                                pause(2)
+                                sprintf('Consulting malicous database...\n')
+                                pause(2)
+                                sprintf('The destination IP %s address is not contained in the malicous database'...
+                                    ,dst_IP)
+                                pause(2)
+                                cprintf('*black' , 'Destination IP %s is permitted', dst_IP)
+                                %sprintf('Destination IP %s is permitted', dst_IP)
+                                
+                                %%%%%%%DISNEY WEBSITE
+                                url = 'https://www.bbc.co.uk/';
+                                web(url, '-browser')
+
+                                msg = 'Access Granted';
+                                msgbox(msg, 'help')
+                             
+                             %saving the output for analysis
+                             end
+
+                             title2 = 'Receive_Request';
+                             msg = 'FWD_DST_IP';
+                             %initialising gui result
+                             msgbox(msg, title2, 'help')
+                             
+                         elseif strcmp(func, 'func_6')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s SET_FLOWS is an authorised function for %s\n\n',func,application);
+                             cprintf('*blue' ,'%s SET_FLOWS is an authorised permission for %s\n\n',func,application);
+                             func = fopen('blacklist.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             %reading flow table
+                             blacklist_IP = {'200.1.1.1', '98.4.0.3', '123.5.6.7'};
+                             %Blacklisted websites 
+                             web_addresses = {'www.blackops.com','www.intruders.com', 'www.totalhack.com'};
+                             %data structure that helps map the IP to the respective
+                             %websites (DNS Mapping)
+
+                             blacklist_database = containers.Map( blacklist_IP, web_addresses);
+                             
+                              %Preconfigured flows in the flow table
+                            pause(2)
+                            sprintf('Installed blacklist flows in FlowTable \n')
+                            pause(2)
+                            %IP and website values from the database
+                            Target_IPAddresses = keys(blacklist_database);
+                            DNS_IPmap = values(blacklist_database);
+
+                            %fucntion that displays the malicious database
+                            
+                             disp('Target_IPAddresses    DNS_IPmap '  );
+                             display([Target_IPAddresses',  DNS_IPmap'])
+                             
+                                
+                             
+                             %saving the output for analysis
+                             
+                             title2 = 'Receive_Request';
+                             msg = 'SET_FLOWS';
+                             %initialising gui result
+                             msgbox(msg, title2, 'help')
+                             
+                             
+                             %THREAT THAT MAKE CALLS TO NETWORK INTERFACE
+                             %CARDS
+                             
+                        elseif strcmp(func, 'func_7')
+                             %verbose statement confirming attribute
+                             %fprintf(' %s is not an authorised function for %s\n\n',func,application);
+                             cprintf('*red' ,'%s is NOT an authorised permission for %s\n\n',func,application);
+                             func = fopen('blacklist.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             
+                              %Preconfigured flows in the flow table
+                             [info, network ]= dos('systeminfo | findstr "Network"')
+                             
+                             fwrite(func, network)
+                             fwrite(func, info)
+                             
+                             %saving the output for analysis
+                             
+                             title2 = 'Receive_Request';
+                             msg = 'Invalid Request';
+                             %initialising gui result
+                             msgbox(msg, title2, 'error')
+                        
+                             %COMPOSED THREATS
+                       elseif strcmp(func, 'func_8')
+                             %verbose statement confirming attribute
+                             fprintf(' %s is not an authorised function for %s\n\n',func,application);
+                             cprintf('*red' ,'%s is NOT an authorised permission for %s\n\n',func,application);
+                             func = fopen('blacklist.txt', 'w');
+                             %To check if there is actially a valid MAC
+                             %request
+                             if func < 0
+                                 error('error processing switch request %s \n n', func)
+                             end
+                             
+                              %Preconfigured flows in the flow table
+                             [info, os_call ]= dos('systeminfo | findstr "OS"')
+                             
+                             fwrite(func, os_call)
+                             fwrite(func, info)
+                             
+                             %saving the output for analysis
+                             
+                             title2 = 'Receive_Request';
+                             msg = 'Invalid Request';
+                             %initialising gui result
+                             msgbox(msg, title2, 'error')
+                             
+                             
+                             
+                                       
+                        Permissions =menu('PERMISSIONS FOR APPLICATION', 'READ_SRC_IP', 'READ_DST_IP'...
+                         ,'COMP_IP','DRP_IP','FWD_DST_IP','SET_FLOWS')
+                            error('Controller_info: invalid request')
+                             
+%                          else
+%                               fprintf('Invalid Request for %s',  func)
+%                               errordlg('Unrecognised Function')
+
+                            
+                        end
+                        
+                        
+                      
+               %if the provided token does not match the given token,
+               %deny!!     
+                    elseif strcmp(application, 'App2') && ~strcmp(token...
+                               , S) 
+                           %char fucntion casted on a c ell array
+                        sprintf('Wrong token for %s', char(Key(2)))
+                        message3 = 'Access Denied';
+                        title3 = 'Controller_info:';
+                        msgbox(message3, title3, 'error')
+                        error('Authentication fail, access denied')
+                        
+                        
+                    else
+                        error('Controller_info: Invalid application')       
+                    end              
+                 
+             end
+            
+            end
+        end
+        
+end
+
+%COLOURED TXT OUTPUT
+%cprintf('*magenta',    'regular black text ')
+
+          
