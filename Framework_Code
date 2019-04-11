@@ -1,8 +1,9 @@
 
 classdef Controller
-    %A Network controller that observe
-    % and control network functtion and
-    %events
+    
+    %A Network controller that observes
+    % and controls network function with
+    %the help of events
     
     
     %IP address of the controller
@@ -19,6 +20,7 @@ classdef Controller
     
     
   methods
+      
       %Constructor that initialises the controller with default settings
       function obj = Controller(IP, LOCATION, IDENTITY)
           if nargin>0
@@ -62,7 +64,8 @@ classdef Controller
        
         %fucntion that prints the controller IP and the running machine
         function obj = controllerIP()
-            
+            %to measure code execution time (tic toc func is used)
+            tic
             %java class type, a function that invokes how to get the IP and
             %local host machine address
             me = java.net.InetAddress.getLocalHost;
@@ -77,8 +80,10 @@ classdef Controller
             %java class to matlab string for brevity
             fprintf('\n The IP address of the controller is %s \n', char(obj));
             fprintf('\n The controller is running on server %s \n ', char(hostname));
-            fprintf('\n And the current date & time of the day is %s',...
+            fprintf('\n And the current date & time of the day is %s \n',...
                 datestr(now))
+            exec_time = toc;
+            fprintf('\n Code execution time is %f \n', exec_time);
        
         end
         
@@ -89,7 +94,7 @@ classdef Controller
             
             %carrying out app checks,if the args are null, request...
             % for more input
-            
+            tic
             if (nargin == 0) 
                 display('More args required')
                 
@@ -145,6 +150,8 @@ classdef Controller
                     
              %Application identifier as keyset & name of application
              
+             %it takes 1.02 x 10^18 years to  decrytp a  128-bit
+             % 30 gigabit power for year according to Von Neuman Landauer
                  %Random Key genrator algorithm
 %                 A9=['A':'Z' '0':'9';];
 %                 Data=zeros(length(A9),20);
@@ -227,14 +234,15 @@ classdef Controller
                     end              
                  
              end
-                    
+            exec_time_authapp = toc;
+            fprintf('\n Code execution time is %f \n', exec_time_authapp);       
         end
             
         
             %function that output MAC address
        
             function decimal2hex()
-                
+                tic
 %                 if isempty(argument)
 %                     display('Argument required')
 %                 end
@@ -268,14 +276,14 @@ classdef Controller
                     display(['This is the new MAC address   ', char(MAC_ADDRESS)])
                 end
         
-                
+                toc
             end
                 
                     
   %Layer 2 MAC LEARNING APPLICATION takes two input for start (src mac & 
   %dst mac)
         function l2switch(src_macaddress, dst_macaddress)
-            
+            tic
             %MAC address and designated port numbers in FlowTable
             hw_address = {'00-00-00-00-00-01','0B-A1-CE-00-00-01',...
                 'CB-14-22-01-23-45'};
@@ -305,13 +313,13 @@ classdef Controller
                
                %resulting action if the coditions above are met
                 fprintf('Table lookup for Source MAC address %s \n \n', src_macaddress)
-                pause(2);
+                %pause(2);
                 
                 %The parenthesis on value_index{n} is to covert the
                 %datatype so that it can be displayed on the output
                 fprintf('Source MAC address %s is contained in the Flowtable at port  %d \n \n'...
                     , src_macaddress, value_index{1});
-                pause(2)
+                %pause(2)
                 display('      MAC_Address         Port'  );
                 %binding
                 MAC_ADD_1 = key_index(1);
@@ -320,11 +328,11 @@ classdef Controller
                 
                 %Table lookup for MAC
                 fprintf('Table lookup for Destintion MAC address %s \n \n', dst_macaddress)
-                pause(2);
+                %pause(2);
                 
                 fprintf('Destination MAC address %s is contained in the Flowtable at port  %d \n \n'...
                     , dst_macaddress, value_index{2});
-                pause(2)
+                %pause(2)
                 display('      MAC_Address         Port'  );
                 MAC_ADD_2 = key_index(2);
                 Port_num_2 = value_index(2);
@@ -514,11 +522,15 @@ classdef Controller
             
                 
             end
+        toc
+        
+        
+        Dataplane = Switch('1ECF7F5A2D84', '0000001', 1, 8)
         end
         
         %function that generates random IP addresses
         function GenerateRandomIP()
-            
+            tic
             %initiating variables that will generate 4 octets IP address.
             m = 1:90;
             y = 100:160;
@@ -541,12 +553,13 @@ classdef Controller
             fprintf('\n\n')
             disp(IP)
             %display(e + '.' + f)
-            
+            toc
         end
         
        %Application that suppresses unwanted traffic from the
         function blacklist(src_IP, dst_IP)
             
+            tic
             %Matching IP addresses for the coreesponding blacklist website
             blacklist_IP = {'200.1.1.1', '98.4.0.3', '123.5.6.7'};
             %Blacklisted websites 
@@ -652,12 +665,16 @@ classdef Controller
             
                 
             end
+            toc
             
+            
+            Dataplane = Switch('1ECF7F5A2D84', '0000001', 1, 8)
         end
         
         %AUTHORISATION FUNCTION
+        
         function b = authorize(app,func)
-            
+            tic
             
             keyset1 = {'func1','func2','func3','func4','func5','func6','func7','func8','func9','func10','func11'....
                 ,'func12','func13'};
@@ -701,7 +718,7 @@ classdef Controller
                     b=false;
                 end
             end
-
+toc
          end
          %End of authorisation 
          
@@ -809,7 +826,44 @@ classdef Controller
 
                         %Checking for the right attribute if yes exec.
                          if strcmp(func, 'func1')
-                             %verboe stateent confirming attribute
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                             %opinion operations for native applications
+                             %W_ca
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae = 0.9;
+                             d_ae = 0.1;
+                             u_ae = 0;
+                             a_ae = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae , d_ae, u_ae, a_ae ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce = (P_ca * b_ae)
+                             d_ce = (P_ca * d_ae)
+                             u_ce = (1 - P_ca( b_ae + d_ae))
+                             a_ce = (a_ae)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce d_ce u_ce a_ce])
+                          
+                             %[b_ce  d_ce   u_ce  a_ce]
+         
+                             %Trust = W_ca o W_ae
+                             %verboe statement confirming attribute
                              %fprintf(' %s READ_SRC_MAC is an authorised permission for %s\n\n',func,application);
                              cprintf('*blue' ,'%s READ_SRC_MAC is an authorised permission for %s\n\n',func,application);
                              func = fopen('switchrequest.txt', 'r');
@@ -849,6 +903,41 @@ classdef Controller
                              disp(DST_MAC)
                              fclose(func);   
                              
+                             
+                             
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             %opinion operations for native applications
+                             %W_ca
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_2 = 0.9;
+                             d_ae_2 = 0.1;
+                             u_ae_2 = 0;
+                             a_ae_2 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_2 , d_ae_2, u_ae_2, a_ae_2 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_2 = (P_ca * b_ae_2)
+                             d_ce_2 = (P_ca * d_ae_2)
+                             u_ce_2 = (1 - P_ca( b_ae_2 + d_ae_2))
+                             a_ce_2 = (a_ae_2)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_2 d_ce_2 u_ce_2 a_ce_2])
+                             
                          elseif strcmp(func, 'func3')
                              %verbose statement confirming attribute
                              %fprintf(' %s WRITE_SRC_MAC is an authorised function for %s\n\n',func,application);
@@ -870,6 +959,40 @@ classdef Controller
                              %disp(SRC_MAC)
                              fclose(func);
                              
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                          
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_3 = 0.9;
+                             d_ae_3 = 0.1;
+                             u_ae_3 = 0;
+                             a_ae_3 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_3 , d_ae_3, u_ae_3, a_ae_3 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_3 = (P_ca * b_ae_3)
+                             d_ce_3 = (P_ca * d_ae_3)
+                             u_ce_3 = (1 - P_ca( b_ae_3 + d_ae_3))
+                             a_ce_3 = (a_ae_3)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_3 d_ce_3 u_ce_3 a_ce_3])
+                             
+                             
+                             
                          elseif strcmp(func, 'func4')
                              %verbose statement confirming attribute
                              %fprintf(' %s WRITE_DST_MAC is an authorised function for %s\n\n',func,application);
@@ -890,6 +1013,38 @@ classdef Controller
                              %display MAC
                              %disp(SRC_MAC)
                              fclose(func);
+                             
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_4 = 0.9;
+                             d_ae_4 = 0.1;
+                             u_ae_4 = 0;
+                             a_ae_4 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_4 , d_ae_4, u_ae_4, a_ae_4 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_4 = (P_ca * b_ae_4)
+                             d_ce_4 = (P_ca * d_ae_4)
+                             u_ce_4 = (1 - P_ca( b_ae_4 + d_ae_4))
+                             a_ce_4 = (a_ae_4)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_4 d_ce_4 u_ce_4 a_ce_4])
 
                                  
                                  %UNICAST FORWARDING
@@ -914,6 +1069,38 @@ classdef Controller
                              %display MAC
                              %disp(SRC_MAC)
                              fclose(func);
+                             
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_5 = 0.9;
+                             d_ae_5 = 0.1;
+                             u_ae_5 = 0;
+                             a_ae_5 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_5 , d_ae_5, u_ae_5, a_ae_5 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_5 = (P_ca * b_ae_5)
+                             d_ce_5 = (P_ca * d_ae_5)
+                             u_ce_5 = (1 - P_ca( b_ae_5 + d_ae_5))
+                             a_ce_5 = (a_ae_5)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_5 d_ce_5 u_ce_5 a_ce_5])
 
                          elseif strcmp(func, 'func6')
                              %verbose statement confirming attribute
@@ -945,6 +1132,38 @@ classdef Controller
                              %Physical\Virtual Memory, Boot time,
                              %Directory calls
                              
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                              b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_6 = 0.9;
+                             d_ae_6 = 0.1;
+                             u_ae_6 = 0;
+                             a_ae_6 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_6 , d_ae_6, u_ae_6, a_ae_6 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_6 = (P_ca * b_ae_6)
+                             d_ce_6 = (P_ca * d_ae_6)
+                             u_ce_6 = (1 - P_ca( b_ae_6 + d_ae_6))
+                             a_ce_6 = (a_ae_6)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_6 d_ce_6 u_ce_6 a_ce_6])
+                             
                          elseif strcmp(func, 'func7')
                              %verbose statement confirming attribute
                              %fprintf(' %s  is NOT an authorised function for %s\n\n',func,application);
@@ -969,12 +1188,51 @@ classdef Controller
                              msgbox(msg, title2, 'error')
                              %display MAC
                              %disp(SRC_MAC)
+                             
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_7 = 0.1;
+                             d_ae_7 = 0.9;
+                             u_ae_7 = 0;
+                             a_ae_7 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_7 , d_ae_7, u_ae_7, a_ae_7 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_7 = (P_ca * b_ae_7)
+                             d_ce_7 = (P_ca * d_ae_7)
+                             u_ce_7 = (1 - P_ca( b_ae_7 + d_ae_7))
+                             a_ce_7 = (a_ae_7)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_7 d_ce_7 u_ce_7 a_ce_7])
 
                              error('Controller_Info:Invalid Request')
                              fclose(func);
                             
+                             
+                             
+                             
+                             
                              %Composed Threat that makes TCP/IP calls on 
                             % the establsihed socket conection%
+                            
+                             
+                            
                          elseif strcmp(func, 'func8')
                              %verbose statement confirming attribute
                              %fprintf(' %s  is NOT an authorised function for %s\n\n',func,application);
@@ -985,7 +1243,37 @@ classdef Controller
                              if func < 0
                                  error('error processing switch request %s \n n', func)
                              end
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
                              
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_8 = 0.1;
+                             d_ae_8 = 0.9;
+                             u_ae_8 = 0;
+                             a_ae_8 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_8 , d_ae_8, u_ae_8, a_ae_8 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_8 = (P_ca * b_ae_8)
+                             d_ce_8 = (P_ca * d_ae_8)
+                             u_ce_8 = (1 - P_ca( b_ae_8 + d_ae_8))
+                             a_ce_8 = (a_ae_8)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_8 d_ce_8 u_ce_8 a_ce_8])
     
                              %Initiating Threat for TCP port connection
                              %execute tcp connection and reveal results
@@ -993,7 +1281,7 @@ classdef Controller
                              msg = 'Invalid_Request';
                              %initialising gui result
                              msgbox(msg, title2, 'error')
-                             Attack = dos('netstat')
+                             Attack = dos('netstat');
                              error('Controller_Info:Invalid Request')
                              fclose(func);    
      
@@ -1002,7 +1290,7 @@ classdef Controller
                               errordlg('unrecognised function')
 
                          end
-                
+     
                %if the provided token does not match the given token,
                %deny!!
                     elseif strcmp(application, 'App1') && ~strcmp(token...
@@ -1057,7 +1345,41 @@ classdef Controller
                             ,'COMP_IP','DRP_IP','FWD_DST_IP','SET_FLOWS');
                                fclose(func);
                                        
-                            
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                             %opinion operations for native applications
+                             %W_ca
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae = 0.9;
+                             d_ae = 0.1;
+                             u_ae = 0;
+                             a_ae = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae , d_ae, u_ae, a_ae ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce = (P_ca * b_ae)
+                             d_ce = (P_ca * d_ae)
+                             u_ce = (1 - P_ca( b_ae + d_ae))
+                             a_ce = (a_ae)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce d_ce u_ce a_ce])
+                          
+                             %[b_ce  d_ce   u_ce  a_ce]
                             
    
                         elseif strcmp(func, 'func_2')
@@ -1080,6 +1402,39 @@ classdef Controller
                              fclose(func);
                              Permissions =menu('PERMISSIONS FOR APPLICATION', 'READ_SRC_IP', 'READ_DST_IP'...
                             ,'COMP_IP','DRP_IP','FWD_DST_IP','SET_FLOWS');
+                        
+                              opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             %opinion operations for native applications
+                             %W_ca
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_2 = 0.9;
+                             d_ae_2 = 0.1;
+                             u_ae_2 = 0;
+                             a_ae_2 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_2 , d_ae_2, u_ae_2, a_ae_2 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_2 = (P_ca * b_ae_2)
+                             d_ce_2 = (P_ca * d_ae_2)
+                             u_ce_2 = (1 - P_ca( b_ae_2 + d_ae_2))
+                             a_ce_2 = (a_ae_2)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_2 d_ce_2 u_ce_2 a_ce_2])
                              
                          elseif strcmp(func, 'func_3')
                              %verbose statement confirming attribute
@@ -1113,6 +1468,38 @@ classdef Controller
                              msg = 'COMP_IP';
                              %initialising gui result
                              msgbox(msg, title2, 'help')
+                             
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                          
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_3 = 0.9;
+                             d_ae_3 = 0.1;
+                             u_ae_3 = 0;
+                             a_ae_3 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_3 , d_ae_3, u_ae_3, a_ae_3 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_3 = (P_ca * b_ae_3)
+                             d_ce_3 = (P_ca * d_ae_3)
+                             u_ce_3 = (1 - P_ca( b_ae_3 + d_ae_3))
+                             a_ce_3 = (a_ae_3)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_3 d_ce_3 u_ce_3 a_ce_3])
                              
                          elseif strcmp(func, 'func_4')
                              %verbose statement confirming attribute
@@ -1164,6 +1551,39 @@ classdef Controller
                              msgbox(msg, title2, 'help')
                              
                              
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_4 = 0.9;
+                             d_ae_4 = 0.1;
+                             u_ae_4 = 0;
+                             a_ae_4 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_4 , d_ae_4, u_ae_4, a_ae_4 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_4 = (P_ca * b_ae_4)
+                             d_ce_4 = (P_ca * d_ae_4)
+                             u_ce_4 = (1 - P_ca( b_ae_4 + d_ae_4))
+                             a_ce_4 = (a_ae_4)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_4 d_ce_4 u_ce_4 a_ce_4])
+
+                             
                           elseif strcmp(func, 'func_5')
                              %verbose statement confirming attribute
                              %fprintf(' %s FWD__DST_IP is an authorised function for %s\n\n',func,application);
@@ -1212,6 +1632,38 @@ classdef Controller
                              msg = 'FWD_DST_IP';
                              %initialising gui result
                              msgbox(msg, title2, 'help')
+                               opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_5 = 0.9;
+                             d_ae_5 = 0.1;
+                             u_ae_5 = 0;
+                             a_ae_5 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_5 , d_ae_5, u_ae_5, a_ae_5 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_5 = (P_ca * b_ae_5)
+                             d_ce_5 = (P_ca * d_ae_5)
+                             u_ce_5 = (1 - P_ca( b_ae_5 + d_ae_5))
+                             a_ce_5 = (a_ae_5)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_5 d_ce_5 u_ce_5 a_ce_5])
+                             
                              
                          elseif strcmp(func, 'func_6')
                              %verbose statement confirming attribute
@@ -1254,6 +1706,38 @@ classdef Controller
                              %initialising gui result
                              msgbox(msg, title2, 'help')
                              
+                               opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_6 = 0.9;
+                             d_ae_6 = 0.1;
+                             u_ae_6 = 0;
+                             a_ae_6 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_6 , d_ae_6, u_ae_6, a_ae_6 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_6 = (P_ca * b_ae_6)
+                             d_ce_6 = (P_ca * d_ae_6)
+                             u_ce_6 = (1 - P_ca( b_ae_6 + d_ae_6))
+                             a_ce_6 = (a_ae_6)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_6 d_ce_6 u_ce_6 a_ce_6])
+                             
                              
                              %THREAT THAT MAKE CALLS TO NETWORK INTERFACE
                              %CARDS
@@ -1280,8 +1764,41 @@ classdef Controller
                              title2 = 'Receive_Request';
                              msg = 'Invalid Request';
                              %initialising gui result
+                             
                              msgbox(msg, title2, 'error')
-                        
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_7 = 0.1;
+                             d_ae_7 = 0.9;
+                             u_ae_7 = 0;
+                             a_ae_7 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_7 , d_ae_7, u_ae_7, a_ae_7 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_7 = (P_ca * b_ae_7)
+                             d_ce_7 = (P_ca * d_ae_7)
+                             u_ce_7 = (1 - P_ca( b_ae_7 + d_ae_7))
+                             a_ce_7 = (a_ae_7)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_7 d_ce_7 u_ce_7 a_ce_7])
+                             error('Controller_info: invalid request')
+               
                              %COMPOSED THREATS
                        elseif strcmp(func, 'func_8')
                              %verbose statement confirming attribute
@@ -1306,6 +1823,38 @@ classdef Controller
                              msg = 'Invalid Request';
                              %initialising gui result
                              msgbox(msg, title2, 'error')
+                             
+                             opinion_operation = ['belief (b)', 'disbelief (d)','uncertainty (u)', 'base_rate (a)'];
+                             display(opinion_operation)
+                             
+                             b_ca = 1;
+                             d_ca = 0;
+                             u_ca = 0;
+                             a_ca = 0.9;
+                             %probability
+                             P_ca = (b_ca + (u_ca)*(a_ca));
+                             
+                             display(P_ca)
+                             %opinion operations for controller on native applications
+                             %W_ae
+                             b_ae_8 = 0.1;
+                             d_ae_8 = 0.9;
+                             u_ae_8 = 0;
+                             a_ae_8 = 0.9;
+                             
+                             Trust_operation = [b_ca , d_ca , u_ca  , a_ca,  b_ae_8 , d_ae_8, u_ae_8, a_ae_8 ];
+                             
+                             %The equivalence trust W_ce
+                             
+                             b_ce_8 = (P_ca * b_ae_8)
+                             d_ce_8 = (P_ca * d_ae_8)
+                             u_ce_8 = (1 - P_ca( b_ae_8 + d_ae_8))
+                             a_ce_8 = (a_ae_8)
+                             
+                             %The equivalent trust is evaluates as follows:
+                             fprintf('The equivalent evaluated trust is: \n ');
+                             fprintf(' \t  %s  \t %s \t \t %s \t %s  \n ', 'b_ce', 'd_ce', 'u_ce', 'a_ce')
+                             display([b_ce_8 d_ce_8 u_ce_8 a_ce_8])
                              
                              
                              
@@ -1341,7 +1890,21 @@ classdef Controller
                  
              end
             
-            end
+         end
+            
+        function  connect(hosts)
+%UNTITLED2 Summary of this function goes here
+%   Detailed explanation goes here
+tic
+if ischar(hosts)
+    
+    dos('ping -t 192.168.56.1')
+end
+%end
+    toc
+
+
+end 
         end
         
 end
